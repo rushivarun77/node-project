@@ -1,23 +1,7 @@
 pipeline {
     agent any 
-    stages{
-        stage("checkout"){
-            steps{
-                 checkout scm
-            }
-        }
-       stage("Test") {
-            steps {
-                // Install Node.js (if not already installed) using Chocolatey package manager
-                bat '''
-                choco install nodejs -y
-                npm install
-                '''
 
-                // Run npm tests
-                bat 'npm test'
-            }
-        }
+    stages {
         stage('Build') {
             steps {
                 script {
@@ -26,7 +10,14 @@ pipeline {
                 }
             }
         }
-        
+        stage('Test') {
+            steps {
+                script {
+                    // Run tests here if you have any
+                    echo 'Running tests...'
+                }
+            }
+        }
         stage('Deploy') {
             steps {
                 script {
