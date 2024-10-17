@@ -8,14 +8,22 @@ pipeline {
         }
         stage("Test") {
             steps {
-                // Install Node.js (if not already installed) using Chocolatey package manager
+                // Install Node.js using Chocolatey and run npm commands
                 bat '''
-                choco install nodejs -y
-                npm install
-                '''
+                @echo off
+                choco -v || (echo "Installing Chocolatey..." & powershell -Command "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))")
+                
+                choco install nodejs -y || echo "Node.js is already installed."
+                
+                node -v || (echo "Error: Node.js installation failed." & exit /b 1)
+                npm -v || (echo "Error: npm is not recognized." & exit /b 1)
 
-                // Run npm tests
-                bat 'npm test'
+                echo "Running npm install..."
+                npm install || (echo "npm install failed." & exit /b 1)
+
+                echo "Running npm test..."
+                npm test || (echo "npm test failed." & exit /b 1)
+                '''
             }
         }
         stage('Build') {
