@@ -6,13 +6,7 @@ pipeline {
                 checkout scm
             }
         }
-        stage('Install Dependencies') {
-            steps {
-                bat 'choco install nodejs -y || echo "Chocolatey already installed"'
-                bat 'node -v'
-                bat 'npm -v'
-            }
-        }
+        
         stage('Test') {
             steps {
                 bat 'npm install'
@@ -26,6 +20,11 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying...'
+            }
+        }
+         stage('Build Docker Image') {
+            steps {
+                bat 'docker build -t my-node-app:1.0 .'
             }
         }
     }
